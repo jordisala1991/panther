@@ -1,0 +1,13 @@
+diff --git a/AbstractBrowser.php b/AbstractBrowser.php
+index 1520501..53d4a24 100644
+--- a/AbstractBrowser.php
++++ b/AbstractBrowser.php
+@@ -133,7 +133,7 @@ abstract class AbstractBrowser
+     /**
+      * Gets single server parameter for specified key.
+      */
+-    public function getServerParameter(string $key, mixed $default = ''): mixed
++    public function getServerParameter(string $key, mixed $default = '')
+     {
+         return $this->server[$key] ?? $default;
+     }

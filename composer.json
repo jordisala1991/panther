@@ -37,12 +37,21 @@
   "extra": {
     "branch-alias": {
       "dev-main": "1.0.x-dev"
+    },
+    "patches": {
+      "symfony/browser-kit": {
+        "Revert return typehints": "patches/browser-kit-patch.patch"
+      },
+      "symfony/dom-crawler": {
+        "Revert return typehints": "patches/dom-crawler-patch.patch"
+      }
     }
   },
   "config": {
     "sort-packages": true
   },
   "require-dev": {
+    "cweagans/composer-patches": "^1.7",
     "symfony/css-selector": "^4.4 || ^5.0 || ^6.0",
     "symfony/framework-bundle": "^4.4 || ^5.0 || ^6.0",
     "symfony/mime": "^4.4 || ^5.0 || ^6.0",

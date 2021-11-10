@@ -1,0 +1,196 @@
+diff --git a/Crawler.php b/Crawler.php
+index f6da9d6..8542b05 100644
+--- a/Crawler.php
++++ b/Crawler.php
+@@ -303,7 +303,7 @@ class Crawler implements \Countable, \IteratorAggregate
+     /**
+      * Returns a node given its position in the node list.
+      */
+-    public function eq(int $position): static
++    public function eq(int $position): self
+     {
+         if (isset($this->nodes[$position])) {
+             return $this->createSubCrawler($this->nodes[$position]);
+@@ -341,7 +341,7 @@ class Crawler implements \Countable, \IteratorAggregate
+     /**
+      * Slices the list of nodes by $offset and $length.
+      */
+-    public function slice(int $offset = 0, int $length = null): static
++    public function slice(int $offset = 0, int $length = null): self
+     {
+         return $this->createSubCrawler(\array_slice($this->nodes, $offset, $length));
+     }
+@@ -353,7 +353,7 @@ class Crawler implements \Countable, \IteratorAggregate
+      *
+      * @param \Closure $closure An anonymous function
+      */
+-    public function reduce(\Closure $closure): static
++    public function reduce(\Closure $closure): self
+     {
+         $nodes = [];
+         foreach ($this->nodes as $i => $node) {
+@@ -368,7 +368,7 @@ class Crawler implements \Countable, \IteratorAggregate
+     /**
+      * Returns the first node of the current selection.
+      */
+-    public function first(): static
++    public function first(): self
+     {
+         return $this->eq(0);
+     }
+@@ -376,7 +376,7 @@ class Crawler implements \Countable, \IteratorAggregate
+     /**
+      * Returns the last node of the current selection.
+      */
+-    public function last(): static
++    public function last(): self
+     {
+         return $this->eq(\count($this->nodes) - 1);
+     }
+@@ -386,7 +386,7 @@ class Crawler implements \Countable, \IteratorAggregate
+      *
+      * @throws \InvalidArgumentException When current node is empty
+      */
+-    public function siblings(): static
++    public function siblings(): self
+     {
+         if (!$this->nodes) {
+             throw new \InvalidArgumentException('The current node list is empty.');
+@@ -439,7 +439,7 @@ class Crawler implements \Countable, \IteratorAggregate
+      *
+      * @throws \InvalidArgumentException When current node is empty
+      */
+-    public function nextAll(): static
++    public function nextAll(): self
+     {
+         if (!$this->nodes) {
+             throw new \InvalidArgumentException('The current node list is empty.');
+@@ -453,7 +453,7 @@ class Crawler implements \Countable, \IteratorAggregate
+      *
+      * @throws \InvalidArgumentException
+      */
+-    public function previousAll(): static
++    public function previousAll(): self
+     {
+         if (!$this->nodes) {
+             throw new \InvalidArgumentException('The current node list is empty.');
+@@ -467,7 +467,7 @@ class Crawler implements \Countable, \IteratorAggregate
+      *
+      * @throws \InvalidArgumentException When the current node is empty
+      */
+-    public function ancestors(): static
++    public function ancestors(): self
+     {
+         if (!$this->nodes) {
+             throw new \InvalidArgumentException('The current node list is empty.');
+@@ -491,7 +491,7 @@ class Crawler implements \Countable, \IteratorAggregate
+      * @throws \InvalidArgumentException When current node is empty
+      * @throws \RuntimeException         If the CssSelector Component is not available and $selector is provided
+      */
+-    public function children(string $selector = null): static
++    public function children(string $selector = null): self
+     {
+         if (!$this->nodes) {
+             throw new \InvalidArgumentException('The current node list is empty.');
+@@ -692,7 +692,7 @@ class Crawler implements \Countable, \IteratorAggregate
+      * This means that a child selector "div" or "./div" will match only
+      * the div elements of the current crawler, not their children.
+      */
+-    public function filterXPath(string $xpath): static
++    public function filterXPath(string $xpath): self
+     {
+         $xpath = $this->relativize($xpath);
+ 
+@@ -711,7 +711,7 @@ class Crawler implements \Countable, \IteratorAggregate
+      *
+      * @throws \RuntimeException if the CssSelector Component is not available
+      */
+-    public function filter(string $selector): static
++    public function filter(string $selector): self
+     {
+         $converter = $this->createCssSelectorConverter();
+ 
+@@ -722,7 +722,7 @@ class Crawler implements \Countable, \IteratorAggregate
+     /**
+      * Selects links by name or alt value for clickable images.
+      */
+-    public function selectLink(string $value): static
++    public function selectLink(string $value): self
+     {
+         return $this->filterRelativeXPath(
+             sprintf('descendant-or-self::a[contains(concat(\' \', normalize-space(string(.)), \' \'), %1$s) or ./img[contains(concat(\' \', normalize-space(string(@alt)), \' \'), %1$s)]]', static::xpathLiteral(' '.$value.' '))
+@@ -732,7 +732,7 @@ class Crawler implements \Countable, \IteratorAggregate
+     /**
+      * Selects images by alt value.
+      */
+-    public function selectImage(string $value): static
++    public function selectImage(string $value): self
+     {
+         $xpath = sprintf('descendant-or-self::img[contains(normalize-space(string(@alt)), %s)]', static::xpathLiteral($value));
+ 
+@@ -742,7 +742,7 @@ class Crawler implements \Countable, \IteratorAggregate
+     /**
+      * Selects a button by name or alt value for images.
+      */
+-    public function selectButton(string $value): static
++    public function selectButton(string $value): self
+     {
+         return $this->filterRelativeXPath(
+             sprintf('descendant-or-self::input[((contains(%1$s, "submit") or contains(%1$s, "button")) and contains(concat(\' \', normalize-space(string(@value)), \' \'), %2$s)) or (contains(%1$s, "image") and contains(concat(\' \', normalize-space(string(@alt)), \' \'), %2$s)) or @id=%3$s or @name=%3$s] | descendant-or-self::button[contains(concat(\' \', normalize-space(string(.)), \' \'), %2$s) or @id=%3$s or @name=%3$s]', 'translate(@type, "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz")', static::xpathLiteral(' '.$value.' '), static::xpathLiteral($value))
+diff --git a/Field/ChoiceFormField.php b/Field/ChoiceFormField.php
+index 918a18e..a10a5ef 100644
+--- a/Field/ChoiceFormField.php
++++ b/Field/ChoiceFormField.php
+@@ -286,7 +286,7 @@ class ChoiceFormField extends FormField
+      *
+      * @return $this
+      */
+-    public function disableValidation(): static
++    public function disableValidation(): self
+     {
+         $this->validationDisabled = true;
+ 
+diff --git a/Field/FormField.php b/Field/FormField.php
+index 2edb109..209d68a 100644
+--- a/Field/FormField.php
++++ b/Field/FormField.php
+@@ -85,7 +85,7 @@ abstract class FormField
+     /**
+      * Gets the value of the field.
+      */
+-    public function getValue(): string|array|null
++    public function getValue()
+     {
+         return $this->value;
+     }
+diff --git a/Form.php b/Form.php
+index 050bec6..3005d42 100644
+--- a/Form.php
++++ b/Form.php
+@@ -56,7 +56,7 @@ class Form extends Link implements \ArrayAccess
+      *
+      * @return $this
+      */
+-    public function setValues(array $values): static
++    public function setValues(array $values): self
+     {
+         foreach ($values as $name => $value) {
+             $this->fields->set($name, $value);
+@@ -258,7 +258,7 @@ class Form extends Link implements \ArrayAccess
+      *
+      * @throws \InvalidArgumentException When field is not present in this form
+      */
+-    public function get(string $name): FormField|array
++    public function get(string $name)
+     {
+         return $this->fields->get($name);
+     }
+@@ -300,7 +300,7 @@ class Form extends Link implements \ArrayAccess
+      *
+      * @throws \InvalidArgumentException if the field does not exist
+      */
+-    public function offsetGet(mixed $name): FormField|array
++    public function offsetGet(mixed $name)
+     {
+         return $this->fields->get($name);
+     }

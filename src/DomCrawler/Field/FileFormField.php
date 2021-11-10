@@ -29,7 +29,11 @@ final class FileFormField extends BaseFileFormField
      */
     protected $value;
 
-    public function getValue(): array|string|null
+    /**
+     * @return string|string[]|null
+     */
+    #[\ReturnTypeWillChange]
+    public function getValue()
     {
         return $this->value;
     }

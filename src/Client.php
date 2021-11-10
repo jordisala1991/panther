@@ -190,7 +190,11 @@ final class Client extends AbstractBrowser implements WebDriver, JavaScriptExecu
         throw new \InvalidArgumentException('Server parameters cannot be set when using WebDriver.');
     }
 
-    public function getServerParameter($key, $default = ''): mixed
+    /**
+     * @return mixed
+     */
+    #[\ReturnTypeWillChange]
+    public function getServerParameter($key, $default = '')
     {
         throw new \InvalidArgumentException('Server parameters cannot be retrieved when using WebDriver.');
     }
